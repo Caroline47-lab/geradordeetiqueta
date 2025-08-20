@@ -6,7 +6,7 @@
     <title>Gerador de Etiquetas de Preço</title>
     <style>
         /* Define a fonte Inter e cores para um visual limpo. */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
 
         :root {
             --primary-color: #4CAF50;
@@ -203,6 +203,34 @@
             color: #d9534f;
         }
 
+        /* NOVO ESTILO: Ajuste para a etiqueta de 50x30mm, focando no preço */
+        .label-50x30 .product-name {
+            font-size: 0.8em;
+            margin-bottom: 2mm;
+        }
+        .label-50x30 .price-single,
+        .label-50x30 .price-retail {
+            font-size: 1.8em; /* Aumenta o tamanho da fonte do preço */
+            font-weight: 900; /* Deixa o preço super negrito */
+        }
+        .label-50x30 .price-wholesale {
+             font-size: 1em; /* Atacado fica um pouco menor */
+        }
+        
+        /* NOVO ESTILO: Ajuste para o modelo 102x23mm em 3 colunas, mais compacto */
+        .label-102x23.compact .product-name {
+            font-size: 0.7em;
+        }
+        .label-102x23.compact .price-single,
+        .label-102x23.compact .price-wholesale {
+            font-size: 0.9em;
+            font-weight: 700;
+        }
+        .label-102x23.compact .price-retail {
+            font-size: 1.2em;
+            font-weight: 900;
+        }
+        
         /* Estilos para a mensagem de erro. */
         .message-box {
             position: fixed;
@@ -281,6 +309,18 @@
             /* Remove a cor vermelha do varejo para a impressão, garantindo mais contraste */
             .label-102x23.print-three-columns .price-retail {
                  color: black !important;
+            }
+
+            /* Otimizações de impressão para a etiqueta 50x30mm */
+            .label-50x30 {
+                 border: none;
+            }
+            .label-50x30 .product-name,
+            .label-50x30 .price-wholesale,
+            .label-50x30 .price-retail,
+            .label-50x30 .price-single {
+                font-weight: 900 !important;
+                color: black !important;
             }
         }
     </style>
@@ -383,7 +423,7 @@
             '33x21': { className: 'label-33x21', columns: 1 },
             '50x30': { className: 'label-50x30', columns: 1 },
             '40x30': { className: 'label-40x30', columns: 1 },
-            '102x23-3-columns': { className: 'label-102x23 print-three-columns', columns: 3 } 
+            '102x23-3-columns': { className: 'label-102x23 print-three-columns compact', columns: 3 } 
         };
 
         // Obtenção dos elementos do DOM
@@ -501,8 +541,9 @@
                 
                 // Define o conteúdo HTML da etiqueta
                 let labelContent = '';
+                // Removendo "Produto: " para deixar mais limpo e legível
                 if (showProductName && productName) {
-                    labelContent += `<p class="product-name" style="font-size: ${fontSize}px;">Produto: ${productName}</p>`;
+                    labelContent += `<p class="product-name" style="font-size: ${fontSize}px;">${productName}</p>`;
                 }
                 
                 if (twoPricesRadio.checked) {
@@ -511,7 +552,7 @@
                     }
                     labelContent += `<p class="price-retail" style="font-size: ${fontSize}px;">Varejo: R$${retailPrice.replace('.', ',')}</p>`;
                 } else {
-                    labelContent += `<p class="price-single" style="font-size: ${fontSize}px;">Preço: R$${retailPrice.replace('.', ',')}</p>`;
+                    labelContent += `<p class="price-single" style="font-size: ${fontSize}px;">R$${retailPrice.replace('.', ',')}</p>`;
                 }
                 
                 labelDiv.innerHTML = labelContent;
