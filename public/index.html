@@ -173,6 +173,30 @@
             color: #d9534f;
         }
 
+        /* Estilos para a mensagem de erro. */
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            text-align: center;
+            display: none; /* Inicia escondido */
+        }
+        .message-box button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
         /* Oculta o container de formulário e botões na impressão para um layout limpo. */
         @media print {
             body {
@@ -209,14 +233,22 @@
                 box-sizing: border-box;
                 page-break-inside: avoid;
                 margin: 0.75mm; /* Ajuste da margem para espaçamento uniforme */
-                
-                /* Melhoria da qualidade de impressão do texto */
-                font-weight: 600;
+                color: black !important;
+            }
+
+            .label-102x23.print-three-columns .product-name,
+            .label-102x23.print-three-columns .price-wholesale,
+            .label-102x23.print-three-columns .price-retail {
+                /* Forçando o peso máximo da fonte e cor preta para melhor qualidade de impressão */
+                font-weight: 900 !important;
+                color: black !important;
+                white-space: normal; /* Permite que o texto quebre a linha na impressão */
+                overflow: visible;
+                text-overflow: clip;
             }
             
             .label-102x23.print-three-columns .price-retail {
-                font-size: 1.4em; /* Aumenta o tamanho da fonte para melhor leitura */
-                font-weight: 800; /* Torna o preço mais escuro e definido */
+                font-size: 1.4em !important; /* Aumenta o tamanho da fonte para melhor leitura */
             }
 
             /* Estilos de impressão para outros tamanhos */
@@ -284,6 +316,12 @@
             <!-- As etiquetas serão geradas aqui via JavaScript -->
         </div>
 
+        <!-- Mensagem de erro personalizada -->
+        <div id="messageBox" class="message-box">
+            <p id="messageText"></p>
+            <button id="messageCloseBtn">OK</button>
+        </div>
+
     </div>
 
     <script>
@@ -307,6 +345,20 @@
         const labelSizeSelect = document.getElementById('labelSize');
         const quantityInput = document.getElementById('quantity');
         const fontSizeInput = document.getElementById('fontSize');
+        const messageBox = document.getElementById('messageBox');
+        const messageText = document.getElementById('messageText');
+        const messageCloseBtn = document.getElementById('messageCloseBtn');
+
+        // Função para mostrar mensagem de erro
+        function showMessage(message) {
+            messageText.innerText = message;
+            messageBox.style.display = 'block';
+        }
+
+        // Adiciona um ouvinte de evento para fechar a mensagem
+        messageCloseBtn.addEventListener('click', () => {
+            messageBox.style.display = 'none';
+        });
 
         // Adiciona um ouvinte de evento ao botão "Gerar Etiquetas"
         generateBtn.addEventListener('click', generateLabels);
@@ -328,7 +380,7 @@
         function generateLabels() {
             // Valida se o preço de varejo está preenchido
             if (!retailPriceInput.value) {
-                alert('O preço de varejo é obrigatório!');
+                showMessage('O preço de varejo é obrigatório!');
                 return;
             }
 
