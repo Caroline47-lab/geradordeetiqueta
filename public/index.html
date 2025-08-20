@@ -182,31 +182,28 @@
                 padding: 0;
             }
             
-            /* Ajustes para a impressão em 3 colunas */
+            /* Novo ajuste para a impressão em 3 colunas. O display flex e os calc() garantem o layout correto. */
             .labels-container {
                 display: flex;
                 flex-wrap: wrap;
                 width: 100%;
                 margin: 0;
             }
-
-            .label {
+            
+            /* A etiqueta agora tem uma largura calculada para caber 3 em uma linha de 102mm */
+            .label-102x23.print-three-columns {
+                width: calc((102mm / 3) - 2mm); /* 33.33mm por etiqueta, menos 1mm de margem de cada lado */
+                height: 23mm;
                 border: 0.5px solid #000;
                 box-sizing: border-box;
                 page-break-inside: avoid;
-                margin: 0 1mm; /* Espaçamento entre as etiquetas conforme a foto (1mm) */
+                margin: 1mm; /* Espaçamento entre as etiquetas */
             }
 
-            /* Ajustes para as margens na esquerda da impressora térmica*/
-            .labels-container:first-child {
-              margin-left: 1mm;
-            }
-            
-            /* Ajustes específicos para cada tamanho de etiqueta no modo de impressão */
-            .label-33x21 { width: 33mm; height: 21mm; }
-            .label-50x30 { width: 50mm; height: 30mm; }
-            .label-40x30 { width: 40mm; height: 30mm; }
-            .label-102x23 { width: 102mm; height: 23mm; }
+            /* Estilos de impressão para outros tamanhos */
+            .label-33x21 { width: 33mm; height: 21mm; margin: 2mm; border: 0.5px solid #000; }
+            .label-50x30 { width: 50mm; height: 30mm; margin: 2mm; border: 0.5px solid #000; }
+            .label-40x30 { width: 40mm; height: 30mm; margin: 2mm; border: 0.5px solid #000; }
         }
     </style>
 </head>
@@ -236,10 +233,10 @@
             <div class="form-group">
                 <label for="labelSize">Tamanho da Etiqueta</label>
                 <select id="labelSize" required>
-                    <option value="33x21">33 x 21 mm</option>
-                    <option value="50x30">50 x 30 mm</option>
-                    <option value="40x30">40 x 30 mm</option>
-                    <option value="102x23">Etiqueta de 3 colunas (102 x 23 mm)</option>
+                    <option value="33x21">33 x 21 mm (1 coluna)</option>
+                    <option value="50x30">50 x 30 mm (1 coluna)</option>
+                    <option value="40x30">40 x 30 mm (1 coluna)</option>
+                    <option value="102x23-3-columns">Etiqueta de 3 colunas (102 x 23 mm)</option>
                 </select>
             </div>
             
@@ -264,10 +261,10 @@
     <script>
         // Mapeamento dos tamanhos de etiqueta para classes CSS e colunas de grade
         const labelSizes = {
-            '33x21': { className: 'label-33x21', columns: 3 },
-            '50x30': { className: 'label-50x30', columns: 2 },
-            '40x30': { className: 'label-40x30', columns: 2 },
-            '102x23': { className: 'label-102x23', columns: 1 } // Adicionado
+            '33x21': { className: 'label-33x21', columns: 1 },
+            '50x30': { className: 'label-50x30', columns: 1 },
+            '40x30': { className: 'label-40x30', columns: 1 },
+            '102x23-3-columns': { className: 'label-102x23 print-three-columns', columns: 3 } 
         };
 
         // Obtenção dos elementos do DOM
