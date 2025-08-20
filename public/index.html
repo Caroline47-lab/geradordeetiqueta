@@ -179,8 +179,9 @@
             overflow-wrap: break-word;
         }
 
-        /* Ajustado para usar semi-bold */
-        .label .product-name {
+        /* O nome do produto e os rótulos de preço agora usam semi-bold (600) */
+        .label .product-name,
+        .label .price-label-text {
             font-size: 0.9em;
             font-weight: 600; 
             white-space: nowrap;
@@ -189,18 +190,18 @@
             width: 100%;
         }
 
-        /* Ajustado para usar bold */
+        /* Os valores dos preços agora usam bold (700) */
         .label .price-wholesale,
         .label .price-retail,
         .label .price-single {
             font-weight: 700; 
         }
         
-        .label .price-wholesale {
+        .label .price-wholesale-container {
             margin-top: 2px;
         }
 
-        .label .price-retail {
+        .label .price-retail-container {
             margin-top: 5px;
             color: #d9534f;
         }
@@ -305,6 +306,12 @@
                 text-overflow: clip;
             }
             
+            /* Ajuste de peso da fonte na impressão para os rótulos e valores */
+            .label-102x23.print-three-columns .price-label-text {
+                font-weight: 600 !important;
+                color: black !important;
+            }
+            
             .label-102x23.print-three-columns .price-wholesale,
             .label-102x23.print-three-columns .price-retail,
             .label-102x23.print-three-columns .price-single {
@@ -328,6 +335,12 @@
                 font-weight: 600 !important; /* Semi-bold para o nome do produto */
                 color: black !important;
             }
+
+            .label-50x30 .price-label-text {
+                font-weight: 600 !important;
+                color: black !important;
+            }
+
             .label-50x30 .price-wholesale,
             .label-50x30 .price-retail,
             .label-50x30 .price-single {
@@ -560,9 +573,9 @@
                 
                 if (twoPricesRadio.checked) {
                     if (wholesalePrice) {
-                        labelContent += `<p class="price-wholesale" style="font-size: ${fontSize}px;">Atacado: R$${wholesalePrice.replace('.', ',')}</p>`;
+                        labelContent += `<p class="price-wholesale-container" style="font-size: ${fontSize}px;"><span class="price-label-text">Atacado: </span><span class="price-wholesale">R$${wholesalePrice.replace('.', ',')}</span></p>`;
                     }
-                    labelContent += `<p class="price-retail" style="font-size: ${fontSize}px;">Varejo: R$${retailPrice.replace('.', ',')}</p>`;
+                    labelContent += `<p class="price-retail-container" style="font-size: ${fontSize}px;"><span class="price-label-text">Varejo: </span><span class="price-retail">R$${retailPrice.replace('.', ',')}</span></p>`;
                 } else {
                     labelContent += `<p class="price-single" style="font-size: ${fontSize}px;">R$${retailPrice.replace('.', ',')}</p>`;
                 }
