@@ -73,6 +73,16 @@
             border-color: var(--primary-color);
         }
 
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
         .button-group {
             display: flex;
             gap: 15px;
@@ -227,6 +237,10 @@
             <div class="form-group">
                 <label for="productName">Nome do Produto</label>
                 <input type="text" id="productName" placeholder="Ex: Sandália Bella">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="showProductName" checked>
+                    <label for="showProductName" style="margin:0; font-weight: normal;">Exibir nome do produto na etiqueta</label>
+                </div>
             </div>
 
             <div class="form-group">
@@ -247,6 +261,11 @@
                     <option value="40x30">40 x 30 mm (1 coluna)</option>
                     <option value="102x23-3-columns">Etiqueta de 3 colunas (102 x 23 mm)</option>
                 </select>
+            </div>
+
+            <div class="form-group">
+                <label for="fontSize">Tamanho da Fonte (px)</label>
+                <input type="number" id="fontSize" value="12" min="8" max="24">
             </div>
             
             <div class="form-group">
@@ -282,10 +301,12 @@
         const generateBtn = document.getElementById('generateBtn');
         const printBtn = document.getElementById('printBtn');
         const productNameInput = document.getElementById('productName');
+        const showProductNameCheckbox = document.getElementById('showProductName');
         const wholesalePriceInput = document.getElementById('wholesalePrice');
         const retailPriceInput = document.getElementById('retailPrice');
         const labelSizeSelect = document.getElementById('labelSize');
         const quantityInput = document.getElementById('quantity');
+        const fontSizeInput = document.getElementById('fontSize');
 
         // Adiciona um ouvinte de evento ao botão "Gerar Etiquetas"
         generateBtn.addEventListener('click', generateLabels);
@@ -313,10 +334,12 @@
 
             // Lê os valores dos campos de entrada
             const productName = productNameInput.value;
+            const showProductName = showProductNameCheckbox.checked;
             const wholesalePrice = wholesalePriceInput.value ? parseFloat(wholesalePriceInput.value).toFixed(2) : null;
             const retailPrice = parseFloat(retailPriceInput.value).toFixed(2);
             const selectedSize = labelSizeSelect.value;
             const quantity = parseInt(quantityInput.value, 10);
+            const fontSize = fontSizeInput.value;
             
             const sizeData = labelSizes[selectedSize];
             if (!sizeData) {
@@ -338,13 +361,13 @@
                 
                 // Define o conteúdo HTML da etiqueta
                 let labelContent = '';
-                if (productName) {
-                    labelContent += `<p class="product-name">Produto: ${productName}</p>`;
+                if (showProductName && productName) {
+                    labelContent += `<p class="product-name" style="font-size: ${fontSize}px;">Produto: ${productName}</p>`;
                 }
                 if (wholesalePrice) {
-                    labelContent += `<p class="price-wholesale">Atacado: R$${wholesalePrice.replace('.', ',')}</p>`;
+                    labelContent += `<p class="price-wholesale" style="font-size: ${fontSize}px;">Atacado: R$${wholesalePrice.replace('.', ',')}</p>`;
                 }
-                labelContent += `<p class="price-retail">Varejo: R$${retailPrice.replace('.', ',')}</p>`;
+                labelContent += `<p class="price-retail" style="font-size: ${fontSize * 1.2}px;">Varejo: R$${retailPrice.replace('.', ',')}</p>`;
                 
                 labelDiv.innerHTML = labelContent;
                 labelsContainer.appendChild(labelDiv);
