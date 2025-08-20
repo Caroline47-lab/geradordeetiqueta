@@ -183,21 +183,19 @@
             .labels-container {
                 margin: 0;
                 gap: 0;
-                /* O espaçamento entre etiquetas é ajustado aqui. */
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(33mm, 1fr)); /* Exemplo. Este é alterado via JS. */
-                justify-items: start;
-                align-items: start;
+                display: block; /* Alterado para layout de bloco para melhor compatibilidade com impressoras térmicas */
             }
 
             .label {
                 border: 0.5px solid #000;
-                page-break-inside: avoid; /* Previne quebras de página dentro de uma etiqueta. */
+                page-break-after: always; /* Garante que cada etiqueta seja impressa como uma "página" separada */
+                margin: 1mm;
             }
 
-            .label-33x21 {
-                margin: 1mm; /* Ajusta o espaçamento real para impressão */
-            }
+            /* Ajustes específicos para cada tamanho de etiqueta no modo de impressão */
+            .label-33x21 { width: 33mm; height: 21mm; }
+            .label-50x30 { width: 50mm; height: 30mm; }
+            .label-40x30 { width: 40mm; height: 30mm; }
         }
     </style>
 </head>
@@ -310,7 +308,7 @@
             // Limpa o container de etiquetas
             labelsContainer.innerHTML = '';
 
-            // Atualiza o CSS Grid para o número de colunas correto
+            // Atualiza o CSS Grid para o número de colunas correto (somente para visualização na tela)
             labelsContainer.style.gridTemplateColumns = `repeat(${sizeData.columns}, 1fr)`;
 
             // Loop para gerar a quantidade de etiquetas solicitada
