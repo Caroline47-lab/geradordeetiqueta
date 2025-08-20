@@ -192,12 +192,21 @@
             
             /* A etiqueta agora tem uma largura calculada para caber 3 em uma linha de 102mm */
             .label-102x23.print-three-columns {
-                width: calc((102mm / 3) - 2mm); /* 33.33mm por etiqueta, menos 1mm de margem de cada lado */
+                width: calc((102mm / 3) - 1.5mm); /* Ajuste de largura para caber as 3 colunas com margens */
                 height: 23mm;
-                border: 0.5px solid #000;
+                /* Removendo a borda na impressão para melhorar o visual */
+                border: none;
                 box-sizing: border-box;
                 page-break-inside: avoid;
-                margin: 1mm; /* Espaçamento entre as etiquetas */
+                margin: 0.75mm; /* Ajuste da margem para espaçamento uniforme */
+                
+                /* Melhoria da qualidade de impressão do texto */
+                font-weight: 600;
+            }
+            
+            .label-102x23.print-three-columns .price-retail {
+                font-size: 1.4em; /* Aumenta o tamanho da fonte para melhor leitura */
+                font-weight: 800; /* Torna o preço mais escuro e definido */
             }
 
             /* Estilos de impressão para outros tamanhos */
