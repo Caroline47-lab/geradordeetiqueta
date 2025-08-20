@@ -128,25 +128,11 @@
             overflow: hidden;
             position: relative;
         }
-        
-        /* Adicionando estilos para o código de barras */
-        .barcode {
-            margin: 5px 0;
-            display: flex;
-            justify-content: center;
-        }
-        .barcode-bar {
-            background: #000;
-            height: 10mm;
-        }
-        .barcode-text {
-            font-size: 0.7em;
-            margin-top: 2px;
-        }
 
         .label-33x21 { width: 33mm; height: 21mm; }
         .label-50x30 { width: 50mm; height: 30mm; }
         .label-40x30 { width: 40mm; height: 30mm; }
+        .label-102x23 { width: 102mm; height: 23mm; }
         
         .label p {
             margin: 0;
@@ -206,17 +192,21 @@
 
             .label {
                 border: 0.5px solid #000;
-                /* As margens e tamanhos são definidos aqui para o layout de 3 colunas */
                 box-sizing: border-box;
                 page-break-inside: avoid;
-                margin: 2mm; /* Espaçamento entre as etiquetas */
-                
+                margin: 0 1mm; /* Espaçamento entre as etiquetas conforme a foto (1mm) */
+            }
+
+            /* Ajustes para as margens na esquerda da impressora térmica*/
+            .labels-container:first-child {
+              margin-left: 1mm;
             }
             
             /* Ajustes específicos para cada tamanho de etiqueta no modo de impressão */
-            .label-33x21 { width: calc(33mm - 4mm); height: calc(21mm - 4mm); }
-            .label-50x30 { width: calc(50mm - 4mm); height: calc(30mm - 4mm); }
-            .label-40x30 { width: calc(40mm - 4mm); height: calc(30mm - 4mm); }
+            .label-33x21 { width: 33mm; height: 21mm; }
+            .label-50x30 { width: 50mm; height: 30mm; }
+            .label-40x30 { width: 40mm; height: 30mm; }
+            .label-102x23 { width: 102mm; height: 23mm; }
         }
     </style>
 </head>
@@ -244,16 +234,12 @@
             </div>
             
             <div class="form-group">
-                <label for="barcodeNumber">Número do Código de Barras (12 dígitos)</label>
-                <input type="text" id="barcodeNumber" placeholder="Ex: 123456789012" maxlength="12">
-            </div>
-
-            <div class="form-group">
                 <label for="labelSize">Tamanho da Etiqueta</label>
                 <select id="labelSize" required>
                     <option value="33x21">33 x 21 mm</option>
                     <option value="50x30">50 x 30 mm</option>
                     <option value="40x30">40 x 30 mm</option>
+                    <option value="102x23">Etiqueta de 3 colunas (102 x 23 mm)</option>
                 </select>
             </div>
             
@@ -280,7 +266,8 @@
         const labelSizes = {
             '33x21': { className: 'label-33x21', columns: 3 },
             '50x30': { className: 'label-50x30', columns: 2 },
-            '40x30': { className: 'label-40x30', columns: 2 }
+            '40x30': { className: 'label-40x30', columns: 2 },
+            '102x23': { className: 'label-102x23', columns: 1 } // Adicionado
         };
 
         // Obtenção dos elementos do DOM
@@ -291,7 +278,6 @@
         const productNameInput = document.getElementById('productName');
         const wholesalePriceInput = document.getElementById('wholesalePrice');
         const retailPriceInput = document.getElementById('retailPrice');
-        const barcodeNumberInput = document.getElementById('barcodeNumber');
         const labelSizeSelect = document.getElementById('labelSize');
         const quantityInput = document.getElementById('quantity');
 
@@ -308,22 +294,7 @@
             e.preventDefault();
             generateLabels();
         });
-
-        /**
-         * Gera um código de barras visual simples.
-         */
-        function generateBarcode(barcodeNumber) {
-            let barcodeHTML = '<div class="barcode">';
-            for (let i = 0; i < barcodeNumber.length; i++) {
-                // Alterna a largura das barras para simular um código de barras
-                const width = (i % 3 === 0) ? '1px' : '2px';
-                barcodeHTML += `<div class="barcode-bar" style="width: ${width};"></div>`;
-            }
-            barcodeHTML += '</div>';
-            barcodeHTML += `<p class="barcode-text">${barcodeNumber}</p>`;
-            return barcodeHTML;
-        }
-
+        
         /**
          * Gera as etiquetas com base nos dados do formulário.
          */
@@ -338,7 +309,6 @@
             const productName = productNameInput.value;
             const wholesalePrice = wholesalePriceInput.value ? parseFloat(wholesalePriceInput.value).toFixed(2) : null;
             const retailPrice = parseFloat(retailPriceInput.value).toFixed(2);
-            const barcodeNumber = barcodeNumberInput.value;
             const selectedSize = labelSizeSelect.value;
             const quantity = parseInt(quantityInput.value, 10);
             
@@ -369,10 +339,6 @@
                     labelContent += `<p class="price-wholesale">Atacado: R$${wholesalePrice.replace('.', ',')}</p>`;
                 }
                 labelContent += `<p class="price-retail">Varejo: R$${retailPrice.replace('.', ',')}</p>`;
-                
-                if (barcodeNumber) {
-                    labelContent += generateBarcode(barcodeNumber);
-                }
                 
                 labelDiv.innerHTML = labelContent;
                 labelsContainer.appendChild(labelDiv);
