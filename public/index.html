@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Etiquetas de Preço</title>
     <style>
-        /* Define a fonte Inter e cores para um visual limpo. */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+        /* A fonte foi alterada para Poppins com pesos específicos: 600 (semi-bold) e 700 (bold). */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;900&display=swap');
 
         :root {
             --primary-color: #4CAF50;
@@ -16,7 +16,7 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Poppins', sans-serif;
             background-color: #f4f7f9;
             color: var(--text-color);
             margin: 0;
@@ -179,19 +179,21 @@
             overflow-wrap: break-word;
         }
 
+        /* Ajustado para usar semi-bold */
         .label .product-name {
             font-size: 0.9em;
-            font-weight: 600;
+            font-weight: 600; 
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             width: 100%;
         }
 
+        /* Ajustado para usar bold */
         .label .price-wholesale,
         .label .price-retail,
         .label .price-single {
-            font-weight: 700; /* Preços em negrito */
+            font-weight: 700; 
         }
         
         .label .price-wholesale {
@@ -203,21 +205,21 @@
             color: #d9534f;
         }
 
-        /* NOVO ESTILO: Ajuste para a etiqueta de 50x30mm, focando no preço */
+        /* Ajuste para a etiqueta de 50x30mm, focando no preço */
         .label-50x30 .product-name {
             font-size: 0.8em;
             margin-bottom: 2mm;
         }
         .label-50x30 .price-single,
         .label-50x30 .price-retail {
-            font-size: 1.8em; /* Aumenta o tamanho da fonte do preço */
-            font-weight: 900; /* Deixa o preço super negrito */
+            font-size: 1.8em; 
+            font-weight: 900; 
         }
         .label-50x30 .price-wholesale {
-             font-size: 1em; /* Atacado fica um pouco menor */
+             font-size: 1em; 
         }
         
-        /* NOVO ESTILO: Ajuste para o modelo 102x23mm em 3 colunas, mais compacto */
+        /* Ajuste para o modelo 102x23mm em 3 colunas, mais compacto */
         .label-102x23.compact .product-name {
             font-size: 0.7em;
         }
@@ -294,14 +296,21 @@
                 background-color: #fff !important; /* Fundo branco para melhor contraste */
             }
 
-            /* Força a cor e o peso da fonte para impressão de alta qualidade */
-            .label-102x23.print-three-columns .product-name,
+            /* Removendo a fonte super grossa para a impressão. Agora segue o estilo normal. */
+            .label-102x23.print-three-columns .product-name {
+                font-weight: 600 !important; /* Semi-bold para o nome do produto */
+                color: black !important;
+                white-space: normal; /* Permite que o texto quebre a linha na impressão */
+                overflow: visible;
+                text-overflow: clip;
+            }
+            
             .label-102x23.print-three-columns .price-wholesale,
             .label-102x23.print-three-columns .price-retail,
             .label-102x23.print-three-columns .price-single {
-                font-weight: 900 !important;
+                font-weight: 700 !important; /* Bold para os preços */
                 color: black !important;
-                white-space: normal; /* Permite que o texto quebre a linha na impressão */
+                white-space: normal;
                 overflow: visible;
                 text-overflow: clip;
             }
@@ -315,11 +324,14 @@
             .label-50x30 {
                  border: none;
             }
-            .label-50x30 .product-name,
+            .label-50x30 .product-name {
+                font-weight: 600 !important; /* Semi-bold para o nome do produto */
+                color: black !important;
+            }
             .label-50x30 .price-wholesale,
             .label-50x30 .price-retail,
             .label-50x30 .price-single {
-                font-weight: 900 !important;
+                font-weight: 700 !important; /* Bold para os preços */
                 color: black !important;
             }
         }
