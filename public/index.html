@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Etiquetas de Preço</title>
+    <style>
+        /* Define a fonte Inter e cores para um visual limpo. */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #f0f0f0;
+            --text-color: #333;
+            --border-color: #ccc;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f9;
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Estilos do formulário de entrada. */
+        .form-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1em;
+            width: 100%;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            font-size: 1em;
+            font-weight: 700;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-generate {
+            background-color: var(--primary-color);
+        }
+
+        .btn-print {
+            background-color: #007bff;
+        }
+
+        /* Estilos do container de etiquetas. O layout é adaptável com CSS Grid. */
+        .labels-container {
+            width: 100%;
+            display: grid;
+            gap: 10mm; /* Espaçamento entre as etiquetas */
+            margin-top: 30px;
+            justify-items: center;
+            align-items: center;
+        }
+        
+        /* Estilos específicos para cada tipo de etiqueta. */
+        .label {
+            border: 1px dashed var(--border-color);
+            padding: 5mm; /* Preenchimento interno para o conteúdo */
+            box-sizing: border-box;
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .label-33x21 { width: 33mm; height: 21mm; }
+        .label-50x30 { width: 50mm; height: 30mm; }
+        .label-40x30 { width: 40mm; height: 30mm; }
+        
+        .label p {
+            margin: 0;
+            padding: 0;
+            line-height: 1.2;
+            overflow-wrap: break-word;
+        }
+
+        .label .product-name {
+            font-size: 0.9em;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
+
+        .label .price-wholesale {
+            font-size: 1em;
+            font-weight: 400;
+            margin-top: 2px;
+        }
+
+        .label .price-retail {
+            font-size: 1.2em;
+            font-weight: 700;
+            margin-top: 5px;
+            color: #d9534f;
+        }
+
+        /* Oculta o container de formulário e botões na impressão para um layout limpo. */
+        @media print {
+            body {
+                background-color: #fff;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+            }
+
+            .form-container, .btn-print, .btn-generate {
+                display: none;
+            }
+
+            .container {
+                display: block;
+                max-width: none;
+                padding: 0;
+            }
+
+            .labels-container {
+                margin: 0;
+                gap: 0;
+                /* O espaçamento entre etiquetas é ajustado aqui. */
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(33mm, 1fr)); /* Exemplo. Este é alterado via JS. */
+                justify-items: start;
+                align-items: start;
+            }
+
+            .label {
+                border: 0.5px solid #000;
+                page-break-inside: avoid; /* Previne quebras de página dentro de uma etiqueta. */
+            }
+
+            .label-33x21 {
+                margin: 1mm; /* Ajusta o espaçamento real para impressão */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Formulário de Entrada do Usuário -->
+        <div class="form-container">
+            <h1 style="margin:0; font-weight:700; font-size:1.5em; text-align:center;">Gerador de Etiquetas</h1>
+            <p style="text-align:center; color:#666;">Preencha os dados abaixo e clique em "Gerar Etiquetas".</p>
+
+            <div class="form-group">
+                <label for="productName">Nome do Produto</label>
+                <input type="text" id="productName" placeholder="Ex: Sandália Bella">
+            </div>
+
+            <div class="form-group">
+                <label for="wholesalePrice">Preço de Atacado (R$)</label>
+                <input type="number" step="0.01" id="wholesalePrice" placeholder="Ex: 29.90">
+            </div>
+
+            <div class="form-group">
+                <label for="retailPrice">Preço de Varejo (R$)</label>
+                <input type="number" step="0.01" id="retailPrice" placeholder="Ex: 59.90" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="labelSize">Tamanho da Etiqueta</label>
+                <select id="labelSize" required>
+                    <option value="33x21">33 x 21 mm</option>
+                    <option value="50x30">50 x 30 mm</option>
+                    <option value="40x30">40 x 30 mm</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="quantity">Quantidade de Etiquetas</label>
+                <input type="number" id="quantity" value="1" min="1" required>
+            </div>
+
+            <div class="button-group">
+                <button id="generateBtn" class="btn btn-generate">Gerar Etiquetas</button>
+                <button id="printBtn" class="btn btn-print" style="display:none;">Imprimir</button>
+            </div>
+        </div>
+
+        <!-- Área de Visualização e Impressão das Etiquetas -->
+        <div class="labels-container" id="labelsContainer">
+            <!-- As etiquetas serão geradas aqui via JavaScript -->
+        </div>
+
+    </div>
+
+    <script>
+        // Mapeamento dos tamanhos de etiqueta para classes CSS e colunas de grade
+        const labelSizes = {
+            '33x21': { className: 'label-33x21', columns: 3 },
+            '50x30': { className: 'label-50x30', columns: 2 },
+            '40x30': { className: 'label-40x30', columns: 2 }
+        };
+
+        // Obtenção dos elementos do DOM
+        const formContainer = document.querySelector('.form-container');
+        const labelsContainer = document.getElementById('labelsContainer');
+        const generateBtn = document.getElementById('generateBtn');
+        const printBtn = document.getElementById('printBtn');
+        const productNameInput = document.getElementById('productName');
+        const wholesalePriceInput = document.getElementById('wholesalePrice');
+        const retailPriceInput = document.getElementById('retailPrice');
+        const labelSizeSelect = document.getElementById('labelSize');
+        const quantityInput = document.getElementById('quantity');
+
+        // Adiciona um ouvinte de evento ao botão "Gerar Etiquetas"
+        generateBtn.addEventListener('click', generateLabels);
+
+        // Adiciona um ouvinte de evento ao botão "Imprimir"
+        printBtn.addEventListener('click', () => {
+            window.print();
+        });
+
+        // Adiciona um ouvinte de evento ao formulário para submissão via Enter
+        formContainer.addEventListener('submit', (e) => {
+            e.preventDefault();
+            generateLabels();
+        });
+
+        /**
+         * Gera as etiquetas com base nos dados do formulário.
+         */
+        function generateLabels() {
+            // Valida se o preço de varejo está preenchido
+            if (!retailPriceInput.value) {
+                alert('O preço de varejo é obrigatório!');
+                return;
+            }
+
+            // Lê os valores dos campos de entrada
+            const productName = productNameInput.value;
+            const wholesalePrice = wholesalePriceInput.value ? parseFloat(wholesalePriceInput.value).toFixed(2) : null;
+            const retailPrice = parseFloat(retailPriceInput.value).toFixed(2);
+            const selectedSize = labelSizeSelect.value;
+            const quantity = parseInt(quantityInput.value, 10);
+            
+            const sizeData = labelSizes[selectedSize];
+            if (!sizeData) {
+                console.error('Tamanho de etiqueta selecionado não encontrado.');
+                return;
+            }
+
+            // Limpa o container de etiquetas
+            labelsContainer.innerHTML = '';
+
+            // Atualiza o CSS Grid para o número de colunas correto
+            labelsContainer.style.gridTemplateColumns = `repeat(${sizeData.columns}, 1fr)`;
+
+            // Loop para gerar a quantidade de etiquetas solicitada
+            for (let i = 0; i < quantity; i++) {
+                // Cria um novo elemento de div para a etiqueta
+                const labelDiv = document.createElement('div');
+                labelDiv.className = `label ${sizeData.className}`;
+                
+                // Define o conteúdo HTML da etiqueta
+                let labelContent = '';
+                if (productName) {
+                    labelContent += `<p class="product-name">Produto: ${productName}</p>`;
+                }
+                if (wholesalePrice) {
+                    labelContent += `<p class="price-wholesale">Atacado: R$${wholesalePrice.replace('.', ',')}</p>`;
+                }
+                labelContent += `<p class="price-retail">Varejo: R$${retailPrice.replace('.', ',')}</p>`;
+                
+                labelDiv.innerHTML = labelContent;
+                labelsContainer.appendChild(labelDiv);
+            }
+
+            // Mostra o botão de impressão após gerar as etiquetas
+            printBtn.style.display = 'inline-block';
+        }
+    </script>
+</body>
+</html>
