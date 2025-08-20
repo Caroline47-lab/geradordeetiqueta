@@ -263,19 +263,24 @@
                 box-sizing: border-box;
                 page-break-inside: avoid;
                 margin: 0.75mm; /* Ajuste da margem para espaçamento uniforme */
-                color: black !important;
+                background-color: #fff !important; /* Fundo branco para melhor contraste */
             }
 
+            /* Força a cor e o peso da fonte para impressão de alta qualidade */
             .label-102x23.print-three-columns .product-name,
             .label-102x23.print-three-columns .price-wholesale,
             .label-102x23.print-three-columns .price-retail,
             .label-102x23.print-three-columns .price-single {
-                /* Forçando o peso máximo da fonte e cor preta para melhor qualidade de impressão */
                 font-weight: 900 !important;
                 color: black !important;
                 white-space: normal; /* Permite que o texto quebre a linha na impressão */
                 overflow: visible;
                 text-overflow: clip;
+            }
+            
+            /* Remove a cor vermelha do varejo para a impressão, garantindo mais contraste */
+            .label-102x23.print-three-columns .price-retail {
+                 color: black !important;
             }
         }
     </style>
