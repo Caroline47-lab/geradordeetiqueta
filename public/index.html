@@ -260,6 +260,12 @@
 
         /* Oculta o container de formulário e botões na impressão para um layout limpo. */
         @media print {
+            /* Adicionado: Remove todas as margens e padding da página de impressão */
+            @page {
+                margin: 0;
+                padding: 0;
+            }
+            
             body {
                 background-color: #fff;
                 margin: 0;
