@@ -262,6 +262,7 @@
         @media print {
             /* Adicionado: Remove todas as margens e padding da página de impressão */
             @page {
+                size: A4 portrait;
                 margin: 0;
                 padding: 0;
             }
@@ -283,20 +284,30 @@
                 padding: 0;
             }
             
+            /* Novo contêiner para a folha de impressão, garantindo a largura correta para o A4 */
+            .sheet {
+                width: 210mm; /* Largura da folha A4 */
+                margin: 0;
+                padding: 0;
+            }
+
             /* Ajuste de margens e largura para garantir 3 colunas na impressão */
             .labels-container {
+                /* Usamos display: grid para um layout mais preciso */
+                display: grid;
+                /* As 3 colunas agora são de tamanho igual (1fr) */
+                grid-template-columns: repeat(3, 1fr);
                 /* Removemos o espaçamento entre os itens */
-                display: flex;
-                flex-wrap: wrap;
-                width: 100%;
+                gap: 0;
                 margin: 0;
+                width: 100%; /* Ocupa toda a largura do .sheet */
                 justify-content: flex-start;
             }
             
             /* A etiqueta agora tem uma largura exata de 1/3 e sem margens. */
             .label-102x23.print-three-columns {
-                /* Definimos a largura para 33.333% para garantir 3 colunas por linha */
-                width: 33.333%;
+                /* Definimos a largura para 70mm, que é 1/3 de 210mm */
+                width: 70mm;
                 height: 23mm;
                 /* Removendo a borda na impressão para melhorar o visual */
                 border: none;
@@ -439,8 +450,10 @@
         </div>
 
         <!-- Área de Visualização e Impressão das Etiquetas -->
-        <div class="labels-container" id="labelsContainer">
-            <!-- As etiquetas serão geradas aqui via JavaScript -->
+        <div class="sheet">
+            <div class="labels-container" id="labelsContainer">
+                <!-- As etiquetas serão geradas aqui via JavaScript -->
+            </div>
         </div>
 
         <!-- Mensagem de erro personalizada -->
