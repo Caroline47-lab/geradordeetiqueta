@@ -279,24 +279,24 @@
             
             /* Ajuste de margens e largura para garantir 3 colunas na impressão */
             .labels-container {
+                /* Removemos o espaçamento entre os itens */
                 display: flex;
                 flex-wrap: wrap;
                 width: 100%;
                 margin: 0;
-                /* O espaçamento agora é gerenciado pelo justify-content e as margens dos itens */
-                justify-content: space-between;
+                justify-content: flex-start;
             }
             
-            /* A etiqueta agora tem uma largura em porcentagem para se adaptar melhor. */
+            /* A etiqueta agora tem uma largura exata de 1/3 e sem margens. */
             .label-102x23.print-three-columns {
-                /* Definimos a largura para 32%, o que permite 3 etiquetas por linha com um pequeno espaçamento */
-                width: 32%;
+                /* Definimos a largura para 33.333% para garantir 3 colunas por linha */
+                width: 33.333%;
                 height: 23mm;
                 /* Removendo a borda na impressão para melhorar o visual */
                 border: none;
                 box-sizing: border-box;
                 page-break-inside: avoid;
-                margin: 0.5%; /* Adicionamos uma pequena margem para separar as etiquetas */
+                margin: 0; /* Removemos a margem para evitar quebra de linha */
                 background-color: #fff !important; /* Fundo branco para melhor contraste */
             }
 
