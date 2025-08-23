@@ -23,13 +23,13 @@
             padding: 20px;
         }
         
-        /* Classe padrão do body, será alterada via JS */
+        /* Classes padrão do body, definidas via JS */
         body.profile-a4 {
-            /* Estilos específicos para o perfil A4, se necessário */
+            /* Estilos específicos para o perfil A4 */
         }
 
         body.profile-termica {
-            /* Estilos específicos para o perfil térmico, se necessário */
+            /* Estilos específicos para o perfil térmico */
         }
 
         .container {
@@ -161,7 +161,7 @@
             align-items: center;
         }
         
-        /* Estilos específicos para cada tipo de etiqueta. */
+        /* Estilos base para a etiqueta, usando variáveis CSS para dimensões */
         .label {
             border: 1px dashed var(--border-color);
             padding: 5mm;
@@ -174,14 +174,10 @@
             text-align: center;
             overflow: hidden;
             position: relative;
+            /* Dimensões definidas pelas variáveis CSS setadas via JavaScript */
+            width: var(--largura);
+            height: var(--altura);
         }
-
-        .label-33x21 { width: 33mm; height: 21mm; }
-        .label-50x30 { width: 50mm; height: 30mm; }
-        .label-40x30 { width: 40mm; height: 30mm; }
-        /* A etiqueta 102x23 é de 1 coluna para visualização na tela. */
-        .label-102x23 { width: 102mm; height: 23mm; }
-        .label-thermal-80x30 { width: 80mm; height: 30mm; }
         
         .label p {
             margin: 0;
@@ -320,22 +316,22 @@
                     grid-template-columns: repeat(3, 1fr);
                 }
                 
-                /* A etiqueta para a impressão A4 tem largura precisa de 70mm */
-                .label-102x23 {
-                    /* Largura de 70mm, que é 1/3 da largura da folha A4. */
-                    /* A altura de 23mm é mantida para o perfil A4. */
-                    width: 70mm !important; 
-                    height: 23mm !important;
+                /* A etiqueta para a impressão A4 tem largura precisa de 70mm, 
+                   independente da largura definida no JS. A altura é variável. */
+                .label {
+                    width: 70mm !important;
                     border: none;
                     box-sizing: border-box;
                     page-break-inside: avoid;
-                    margin: 0; 
+                    margin: 0 !important; 
                     background-color: #fff !important;
                 }
             }
 
             /* ------------------- Regras de Impressão Térmica ------------------- */
             body.profile-termica {
+                /* @page dinâmico, definido no JavaScript */
+                
                 .labels-container {
                     /* Layout de 1 coluna em grade para impressoras térmicas */
                     display: grid;
@@ -345,22 +341,18 @@
                     justify-items: center;
                     align-items: center;
                 }
-
-                .label-thermal-80x30 {
-                    width: 80mm;
-                    height: 30mm;
+                
+                /* A etiqueta no perfil térmico usa as variáveis de largura e altura do JS */
+                .label {
+                    border: none;
+                    box-sizing: border-box;
+                    page-break-inside: avoid;
+                    margin: 0 !important;
+                    background-color: #fff !important;
                 }
             }
             
             /* Estilos gerais para impressão, independente do perfil */
-            .label {
-                border: none !important;
-                box-sizing: border-box;
-                page-break-inside: avoid;
-                margin: 0 !important;
-                background-color: #fff !important;
-            }
-            
             .label .product-name {
                 font-weight: 600 !important;
                 color: black !important;
@@ -496,12 +488,13 @@
 
     <script>
         // Mapeamento dos tamanhos de etiqueta para classes CSS e colunas de grade
+        // Agora com as dimensões exatas para o cálculo em JS.
         const labelSizes = {
-            '33x21': { className: 'label-33x21', columns: 1 },
-            '50x30': { className: 'label-50x30', columns: 1 },
-            '40x30': { className: 'label-40x30', columns: 1 },
-            '102x23': { className: 'label-102x23', columns: 1 }, // Mantido com 1 coluna para visualização na tela
-            'thermal-80x30': { className: 'label-thermal-80x30', columns: 1 }
+            '33x21': { className: 'label-33x21', width: '33mm', height: '21mm' },
+            '50x30': { className: 'label-50x30', width: '50mm', height: '30mm' },
+            '40x30': { className: 'label-40x30', width: '40mm', height: '30mm' },
+            '102x23': { className: 'label-102x23', width: '102mm', height: '23mm' },
+            'thermal-80x30': { className: 'label-thermal-80x30', width: '80mm', height: '30mm' }
         };
 
         // Obtenção dos elementos do DOM
@@ -560,7 +553,6 @@
         
         // Adiciona um ouvinte para ajustar as opções de etiqueta com base no perfil
         labelSizeSelect.addEventListener('change', (event) => {
-            // Lógica para ajustar a quantidade de etiquetas e outros campos
             const selectedValue = event.target.value;
             const thermalLabels = ['thermal-80x30'];
             
@@ -573,12 +565,20 @@
             printProfileSelect.dispatchEvent(new Event('change'));
         });
 
-
         // Adiciona um ouvinte de evento ao botão "Gerar Etiquetas"
         generateBtn.addEventListener('click', generateLabels);
 
         // Adiciona um ouvinte de evento ao botão "Imprimir"
         printBtn.addEventListener('click', () => {
+            // Define o tamanho da página para impressora térmica, se aplicável
+            if (printProfileSelect.value === 'termica') {
+                const sizeData = labelSizes[labelSizeSelect.value];
+                const styleSheet = document.createElement('style');
+                styleSheet.type = 'text/css';
+                // Define o @page size dinamicamente para o perfil térmico
+                styleSheet.innerText = `@page { size: ${sizeData.width} ${sizeData.height}; margin: 0; padding: 0; }`;
+                document.head.appendChild(styleSheet);
+            }
             window.print();
         });
 
@@ -619,6 +619,7 @@
             const productName = productNameInput.value;
             const showProductName = showProductNameCheckbox.checked;
             const selectedSize = labelSizeSelect.value;
+            const printProfile = printProfileSelect.value;
             const quantity = parseInt(quantityInput.value, 10);
             const fontSize = fontSizeInput.value;
             
@@ -631,18 +632,35 @@
             // Limpa o container de etiquetas
             labelsContainer.innerHTML = '';
             
-            // Define o número de colunas para o layout na tela
-            let columns = sizeData.columns;
-            if (labelSizeSelect.value === '102x23' && printProfileSelect.value === 'a4') {
+            // Define o número de colunas e as dimensões da etiqueta
+            let columns;
+            let labelWidth;
+            let labelHeight;
+            
+            if (printProfile === 'a4') {
+                // Perfil A4: 3 colunas, largura fixa de 70mm, altura variável
                 columns = 3;
+                labelWidth = '70mm';
+                labelHeight = sizeData.height;
+            } else {
+                // Perfil Térmica: 1 coluna, largura e altura do dropdown
+                columns = 1;
+                labelWidth = sizeData.width;
+                labelHeight = sizeData.height;
             }
+            
+            // Atualiza o CSS Grid para o número de colunas correto (somente para visualização na tela)
             labelsContainer.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
 
             // Loop para gerar a quantidade de etiquetas solicitada
             for (let i = 0; i < quantity; i++) {
                 // Cria um novo elemento de div para a etiqueta
                 const labelDiv = document.createElement('div');
-                labelDiv.className = `label ${sizeData.className}`;
+                labelDiv.className = `label`;
+                
+                // Define as variáveis CSS dinamicamente para cada etiqueta
+                labelDiv.style.setProperty('--largura', labelWidth);
+                labelDiv.style.setProperty('--altura', labelHeight);
 
                 // Define o conteúdo HTML da etiqueta
                 let labelContent = '';
