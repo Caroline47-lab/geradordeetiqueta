@@ -22,6 +22,15 @@
             margin: 0;
             padding: 20px;
         }
+        
+        /* Classe padrão do body, será alterada via JS */
+        body.profile-a4 {
+            /* Estilos específicos para o perfil A4, se necessário */
+        }
+
+        body.profile-termica {
+            /* Estilos específicos para o perfil térmico, se necessário */
+        }
 
         .container {
             max-width: 960px;
@@ -170,7 +179,9 @@
         .label-33x21 { width: 33mm; height: 21mm; }
         .label-50x30 { width: 50mm; height: 30mm; }
         .label-40x30 { width: 40mm; height: 30mm; }
+        /* A etiqueta 102x23 é de 1 coluna para visualização na tela. */
         .label-102x23 { width: 102mm; height: 23mm; }
+        .label-thermal-80x30 { width: 80mm; height: 30mm; }
         
         .label p {
             margin: 0;
@@ -260,13 +271,6 @@
 
         /* Oculta o container de formulário e botões na impressão para um layout limpo. */
         @media print {
-            /* Adicionado: Remove todas as margens e padding da página de impressão */
-            @page {
-                size: A4 portrait;
-                margin: 0;
-                padding: 0;
-            }
-            
             body {
                 background-color: #fff;
                 margin: 0;
@@ -284,88 +288,104 @@
                 padding: 0;
             }
             
-            /* Novo contêiner para a folha de impressão, garantindo a largura correta para o A4 */
+            /* Novo contêiner para a folha de impressão. */
             .sheet {
-                width: 210mm; /* Largura da folha A4 */
                 margin: 0;
                 padding: 0;
             }
 
-            /* Ajuste de margens e largura para garantir 3 colunas na impressão */
             .labels-container {
-                /* Usamos display: grid para um layout mais preciso */
-                display: grid;
-                /* As 3 colunas agora são de tamanho igual (1fr) */
-                grid-template-columns: repeat(3, 1fr);
-                /* Removemos o espaçamento entre os itens */
                 gap: 0;
                 margin: 0;
-                width: 100%; /* Ocupa toda a largura do .sheet */
+                width: 100%;
                 justify-content: flex-start;
             }
-            
-            /* A etiqueta agora tem uma largura exata de 1/3 e sem margens. */
-            .label-102x23.print-three-columns {
-                /* Definimos a largura para 70mm, que é 1/3 de 210mm */
-                width: 70mm;
-                height: 23mm;
-                /* Removendo a borda na impressão para melhorar o visual */
-                border: none;
-                box-sizing: border-box;
-                page-break-inside: avoid;
-                margin: 0; /* Removemos a margem para evitar quebra de linha */
-                background-color: #fff !important; /* Fundo branco para melhor contraste */
+
+            /* ------------------- Regras de Impressão A4 ------------------- */
+            body.profile-a4 {
+                /* Define o tamanho da página A4 e remove as margens */
+                @page {
+                    size: A4 portrait;
+                    margin: 0;
+                    padding: 0;
+                }
+                
+                .sheet {
+                    width: 210mm; /* Largura da folha A4 */
+                }
+
+                .labels-container {
+                    /* Layout de 3 colunas em grade */
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                }
+                
+                /* A etiqueta para a impressão A4 tem largura precisa de 70mm */
+                .label-102x23 {
+                    /* Largura de 70mm, que é 1/3 da largura da folha A4. */
+                    /* A altura de 23mm é mantida para o perfil A4. */
+                    width: 70mm !important; 
+                    height: 23mm !important;
+                    border: none;
+                    box-sizing: border-box;
+                    page-break-inside: avoid;
+                    margin: 0; 
+                    background-color: #fff !important;
+                }
             }
 
-            /* Removendo a fonte super grossa para a impressão. Agora segue o estilo normal. */
-            .label-102x23.print-three-columns .product-name {
-                font-weight: 600 !important; /* Semi-bold para o nome do produto */
-                color: black !important;
-                white-space: normal; /* Permite que o texto quebre a linha na impressão */
-                overflow: visible;
-                text-overflow: clip;
+            /* ------------------- Regras de Impressão Térmica ------------------- */
+            body.profile-termica {
+                .labels-container {
+                    /* Layout de 1 coluna em grade para impressoras térmicas */
+                    display: grid;
+                    grid-template-columns: repeat(1, 1fr);
+                    width: auto;
+                    height: auto;
+                    justify-items: center;
+                    align-items: center;
+                }
+
+                .label-thermal-80x30 {
+                    width: 80mm;
+                    height: 30mm;
+                }
             }
             
-            /* Ajuste de peso da fonte na impressão para os rótulos e valores */
-            .label-102x23.print-three-columns .price-label-text {
+            /* Estilos gerais para impressão, independente do perfil */
+            .label {
+                border: none !important;
+                box-sizing: border-box;
+                page-break-inside: avoid;
+                margin: 0 !important;
+                background-color: #fff !important;
+            }
+            
+            .label .product-name {
                 font-weight: 600 !important;
-                color: black !important;
-            }
-            
-            .label-102x23.print-three-columns .price-wholesale,
-            .label-102x23.print-three-columns .price-retail,
-            .label-102x23.print-three-columns .price-single {
-                font-weight: 700 !important; /* Bold para os preços */
                 color: black !important;
                 white-space: normal;
                 overflow: visible;
                 text-overflow: clip;
             }
             
-            /* Remove a cor vermelha do varejo para a impressão, garantindo mais contraste */
-            .label-102x23.print-three-columns .price-retail {
-                 color: black !important;
-            }
-
-            /* Otimizações de impressão para a etiqueta 50x30mm */
-            .label-50x30 {
-                 border: none;
-            }
-            .label-50x30 .product-name {
-                font-weight: 600 !important; /* Semi-bold para o nome do produto */
-                color: black !important;
-            }
-
-            .label-50x30 .price-label-text {
+            .label .price-label-text {
                 font-weight: 600 !important;
                 color: black !important;
             }
-
-            .label-50x30 .price-wholesale,
-            .label-50x30 .price-retail,
-            .label-50x30 .price-single {
-                font-weight: 700 !important; /* Bold para os preços */
+            
+            .label .price-wholesale,
+            .label .price-retail,
+            .label .price-single {
+                font-weight: 700 !important;
                 color: black !important;
+                white-space: normal;
+                overflow: visible;
+                text-overflow: clip;
+            }
+            
+            .label .price-retail-container .price-retail {
+                 color: black !important;
             }
         }
     </style>
@@ -426,10 +446,20 @@
             <div class="form-group">
                 <label for="labelSize">Tamanho da Etiqueta</label>
                 <select id="labelSize" required>
-                    <option value="33x21">33 x 21 mm (1 coluna)</option>
-                    <option value="50x30">50 x 30 mm (1 coluna)</option>
-                    <option value="40x30">40 x 30 mm (1 coluna)</option>
-                    <option value="102x23-3-columns">Etiqueta de 3 colunas (102 x 23 mm)</option>
+                    <option value="33x21">33 x 21 mm</option>
+                    <option value="50x30">50 x 30 mm</option>
+                    <option value="40x30">40 x 30 mm</option>
+                    <option value="102x23">102 x 23 mm</option>
+                    <option value="thermal-80x30">80 x 30 mm (Térmica)</option>
+                </select>
+            </div>
+            
+            <!-- Novo seletor de perfil de impressão -->
+            <div class="form-group">
+                <label for="printProfile">Perfil de Impressão</label>
+                <select id="printProfile" required>
+                    <option value="a4">Folha A4 (3 Colunas)</option>
+                    <option value="termica">Impressora Térmica (1 Coluna)</option>
                 </select>
             </div>
 
@@ -470,10 +500,12 @@
             '33x21': { className: 'label-33x21', columns: 1 },
             '50x30': { className: 'label-50x30', columns: 1 },
             '40x30': { className: 'label-40x30', columns: 1 },
-            '102x23-3-columns': { className: 'label-102x23 print-three-columns compact', columns: 3 } 
+            '102x23': { className: 'label-102x23', columns: 1 }, // Mantido com 1 coluna para visualização na tela
+            'thermal-80x30': { className: 'label-thermal-80x30', columns: 1 }
         };
 
         // Obtenção dos elementos do DOM
+        const body = document.body;
         const formContainer = document.querySelector('.form-container');
         const labelsContainer = document.getElementById('labelsContainer');
         const generateBtn = document.getElementById('generateBtn');
@@ -488,6 +520,7 @@
         const retailPriceInput = document.getElementById('retailPrice');
         const singlePriceInput = document.getElementById('singlePrice');
         const labelSizeSelect = document.getElementById('labelSize');
+        const printProfileSelect = document.getElementById('printProfile'); // Novo seletor
         const quantityInput = document.getElementById('quantity');
         const fontSizeInput = document.getElementById('fontSize');
         const messageBox = document.getElementById('messageBox');
@@ -519,6 +552,27 @@
         // Adiciona ouvintes de evento aos botões de rádio para alternar os campos
         twoPricesRadio.addEventListener('change', togglePriceFields);
         singlePriceRadio.addEventListener('change', togglePriceFields);
+        
+        // Adiciona um ouvinte para mudar a classe do body baseada no perfil de impressão
+        printProfileSelect.addEventListener('change', () => {
+             body.className = `profile-${printProfileSelect.value}`;
+        });
+        
+        // Adiciona um ouvinte para ajustar as opções de etiqueta com base no perfil
+        labelSizeSelect.addEventListener('change', (event) => {
+            // Lógica para ajustar a quantidade de etiquetas e outros campos
+            const selectedValue = event.target.value;
+            const thermalLabels = ['thermal-80x30'];
+            
+            if (thermalLabels.includes(selectedValue)) {
+                printProfileSelect.value = 'termica';
+            } else {
+                printProfileSelect.value = 'a4';
+            }
+            // Dispara o evento de mudança no seletor de perfil para atualizar a classe do body
+            printProfileSelect.dispatchEvent(new Event('change'));
+        });
+
 
         // Adiciona um ouvinte de evento ao botão "Gerar Etiquetas"
         generateBtn.addEventListener('click', generateLabels);
@@ -576,19 +630,22 @@
 
             // Limpa o container de etiquetas
             labelsContainer.innerHTML = '';
-
-            // Atualiza o CSS Grid para o número de colunas correto (somente para visualização na tela)
-            labelsContainer.style.gridTemplateColumns = `repeat(${sizeData.columns}, 1fr)`;
+            
+            // Define o número de colunas para o layout na tela
+            let columns = sizeData.columns;
+            if (labelSizeSelect.value === '102x23' && printProfileSelect.value === 'a4') {
+                columns = 3;
+            }
+            labelsContainer.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
 
             // Loop para gerar a quantidade de etiquetas solicitada
             for (let i = 0; i < quantity; i++) {
                 // Cria um novo elemento de div para a etiqueta
                 const labelDiv = document.createElement('div');
                 labelDiv.className = `label ${sizeData.className}`;
-                
+
                 // Define o conteúdo HTML da etiqueta
                 let labelContent = '';
-                // Removendo "Produto: " para deixar mais limpo e legível
                 if (showProductName && productName) {
                     labelContent += `<p class="product-name" style="font-size: ${fontSize}px;">${productName}</p>`;
                 }
@@ -609,6 +666,11 @@
             // Mostra o botão de impressão após gerar as etiquetas
             printBtn.style.display = 'inline-block';
         }
+        
+        // Define o perfil inicial ao carregar a página
+        window.addEventListener('load', () => {
+            body.className = `profile-${printProfileSelect.value}`;
+        });
     </script>
 </body>
 </html>
